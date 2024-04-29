@@ -11,18 +11,18 @@ def normalized_xy(x1, y1, x2, y2):
 
     return (normalized_dx, normalized_dy)
 
-def ifReachedPath(current_coords, path, motion_vector):
-    if motion_vector[0] < 0 and motion_vector[1] < 0:
-        if current_coords[0] <= path[0] and current_coords[1] <= path[1]:
+def ifReachedPath(x, y, path_x, path_y, motion_vector_x, motion_vector_y):
+    if motion_vector_x < 0 and motion_vector_y < 0:
+        if x <= path_x and y <= path_y:
             return True
-    elif motion_vector[0] >= 0 and motion_vector[1] < 0:
-        if current_coords[0] >= path[0] and current_coords[1] <= path[1]:
+    elif motion_vector_x >= 0 and motion_vector_y < 0:
+        if x >= path_x and y <= path_y:
             return True
-    elif motion_vector[0] < 0 and motion_vector[1] >= 0:
-        if current_coords[0] <= path[0] and current_coords[1] >= path[1]:
+    elif motion_vector_x < 0 and motion_vector_y >= 0:
+        if x <= path_x and y >= path_y:
             return True
-    elif motion_vector[0] >= 0 and motion_vector[1] >= 0:
-        if current_coords[0] >= path[0] and current_coords[1] >= path[1]:
+    elif motion_vector_x >= 0 and motion_vector_y >= 0:
+        if x >= path_x and y >= path_y:
             return True
         
     return False

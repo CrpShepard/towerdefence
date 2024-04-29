@@ -9,14 +9,20 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-Level_debug = Level.Level_Debug()
-tower = Tower.Tower()
+currentLevel = Level.Level_Debug(screen)
+tower = Tower.LMG()
 enemy = Enemy.Conscript()
+currentLevel.enemies.append(enemy)
 
 isTower = False
+isTower_showRadius = False
 
-enemy.current_coords = [random.randint(Level_debug.spawn_coords_x, 1280), random.randint(0, 720)]
-enemy.path = Level_debug.paths
+isCurrentLevel_drawCells = True
+
+enemy.x = random.randint(currentLevel.spawn_coords_x, 1280) 
+enemy.y = random.randint(0, 720)
+enemy.path_x = currentLevel.paths[0]
+enemy.path_y = currentLevel.paths[1]
 enemy.new_path()
 
 while running:
@@ -27,19 +33,31 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                for item in Level_debug.towers_area:
+                for item in currentLevel.towers_area:
                     if item.collidepoint(event.pos):
                         tower.current_coords = [item.left, item.top]
                         isTower = True
+                        isTower_showRadius = True
+
+    for enemy in currentLevel.enemies:
+        currentLevel.handleCell(enemy)
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("white")
 
-    Level_debug.startLevel(screen)
+    currentLevel.drawLevel(screen)
     enemy.draw(screen)
+
+    if isCurrentLevel_drawCells:
+        currentLevel.drawCells(screen)
 
     if isTower:
         tower.draw(screen)
+
+        if isTower_showRadius:
+            tower.showRadius(screen)
+
+        
 
     # flip() the display to put your work on screen
     pygame.display.flip()
