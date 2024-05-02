@@ -1,4 +1,11 @@
 import pygame
+import params
+from enum import Enum
+
+class Type(Enum):
+    SINGLE = 0
+    MULTIPLE = 1
+    AOE = 2
 
 class Tower(pygame.sprite.Sprite):
     damage = 0
@@ -11,9 +18,12 @@ class Tower(pygame.sprite.Sprite):
     x = 0
     y = 0
     accuracy = 0
-    focus = 0
-    focus_group = []
+    targets = []
     engage = False
+    built = False
+    tower_cell_size = params.tower_cell_size
+    attack_timer = 0
+    attack_cooldown = 100
 
     def __init__(self):
         super().__init__()
@@ -23,18 +33,27 @@ class Tower(pygame.sprite.Sprite):
 
     def draw(self, surface):
         #surface.blit(self.image, pygame.Rect(self.x, self.y, 50, 50))
-        pygame.draw.polygon(surface, (51, 153, 51), [[self.x+20, self.y],[self.x+40,self.y+40],[self.x,self.y+40]])
+        pygame.draw.polygon(surface, (51, 153, 51), [[self.x+self.tower_cell_size // 2, self.y],[self.x+self.tower_cell_size,self.y+self.tower_cell_size],[self.x,self.y+self.tower_cell_size]])
         #pygame.draw.rect(surface, (0,60,0), (x,y,40,40))
 
     def showRadius(self, surface):
         circle = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
         pygame.draw.circle(circle, (179, 179, 179, 128), (self.radius, self.radius), self.radius) 
-        surface.blit(circle, (self.x - self.radius + 20, self.y - self.radius + 20))
+        surface.blit(circle, (self.x - self.radius + self.tower_cell_size // 2, self.y - self.radius + self.tower_cell_size // 2))
+
+    def update(self, clock):
+        # Обновляем таймер атаки
+        self.attack_timer += clock.get_time()
+        # Если прошло время атаки, вызываем метод attack() и сбрасываем таймер
+        if self.attack_timer >= self.attack_cooldown:
+            self.attack()
+            self.attack_timer = 0
 
     def attack(self):
-        if self.type == 0:
-            pass
-        return
+        if self.type == Type.SINGLE:
+            if self.targets:
+                self.targets[0].receiveDamage(self.damage)
+                print('inflicted damage!')
     
     def build():
         return
@@ -42,14 +61,11 @@ class Tower(pygame.sprite.Sprite):
     def move():
         return
     
-    def isEnemy():
-        return
-    
 class LMG(Tower):
-    damage = 5
-    radius = 300
+    damage = 10
+    radius = 150
     speed = 2
-    type = 0
+    type = Type.SINGLE
     cost = 100
     time_to_build = 10
     accuracy = 0.6

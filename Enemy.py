@@ -18,6 +18,8 @@ class Enemy(pygame.sprite.Sprite):
     motion_vector_x = 0
     motion_vector_y = 0
     reached_path = False
+    prev_cell_keys = set()
+    alive = True
 
     def __init__(self):
         super().__init__()
@@ -43,15 +45,23 @@ class Enemy(pygame.sprite.Sprite):
 
         self.reached_path = CalcMath.ifReachedPath(self.x, self.y, self.path_x, self.path_y, self.motion_vector_x, self.motion_vector_y)
 
-    def death():
-        return
+    def receiveDamage(self, damage):
+        self.health -= damage
+
+    def checkHealth(self):
+        if self.health <= 0:
+            self.death()
+
+    def death(self):
+        self.alive = False
+        print('dead')
     
     def attack():
         return
     
 class Conscript(Enemy):
     health = 80
-    speed = 3
+    speed = 2
     type = 0
     damage = 1
     evasion = 0.05

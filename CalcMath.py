@@ -26,3 +26,9 @@ def ifReachedPath(x, y, path_x, path_y, motion_vector_x, motion_vector_y):
             return True
         
     return False
+
+def isCircleInsideCircle(x1, y1, r1, x2, y2, r2):
+    d = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+    if (r1 + r2 > d and r1 + d > r2 and r2 + d > r1) or (r1 + d < r2):
+        return True
+    return False
