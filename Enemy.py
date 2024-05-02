@@ -23,17 +23,26 @@ class Enemy(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((20, 20))
+        self.maxHealth = self.health
+        self.surf = pygame.Surface((self.radius * 2, self.radius * 2 + 8), pygame.SRCALPHA, 32)
+        self.surf = self.surf.convert_alpha()
         #self.image = pygame.image.load("resource/images/Enemy_Placeholder.png")
         #self.rect = pygame.Rect(0, 0, 50, 50)
         #self.rect.center = (200, 200)
 
     def draw(self, surface):
         #surface.blit(self.image, pygame.Rect(self.x, self.y, 10, 10))
-        pygame.draw.circle(surface, (255, 51, 0), (self.x, self.y), self.radius, 0)
+        #pygame.draw.circle(self.surf, (255, 51, 0), (self.x, self.y), self.radius, 0)
+        pygame.draw.circle(self.surf, (255, 51, 0), (self.radius, self.radius + 8), self.radius, 0)
+        self.drawHealthBar()
+        surface.blit(self.surf, (self.x, self.y - 8))
 
-    def drawHealthBar(self, surface):
-        pass
+    def drawHealthBar(self):
+        # for red rect
+        pygame.draw.rect(self.surf, (255, 51, 0), (0, 0, 24, 4))
+        # for green rect
+        pygame.draw.rect(self.surf, (0, 204, 0), (0, 0, self.health / self.maxHealth * 24, 4))
+        
 
     def new_path(self):
         self.motion_vector_x, self.motion_vector_y = CalcMath.normalized_xy(self.x, self.y, self.path_x, self.path_y)
@@ -55,9 +64,6 @@ class Enemy(pygame.sprite.Sprite):
     def death(self):
         self.alive = False
         print('dead')
-    
-    def attack():
-        return
     
 class Conscript(Enemy):
     health = 80

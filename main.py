@@ -65,6 +65,8 @@ while running:
             currentLevel.deleteEnemy(enemy)
         if not enemy.reached_path:
             enemy.move()
+        if enemy.x < currentLevel.base_coords_x:
+            currentLevel.enemyReachedBase(enemy)
     
     # flip() the display to put your work on screen
     pygame.display.flip()

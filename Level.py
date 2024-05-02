@@ -108,6 +108,13 @@ class Level(pygame.sprite.Sprite):
 
         self.enemies.remove(enemy)
 
+    def enemyReachedBase(self, enemy):
+        self.deleteEnemy(enemy)
+        self.base_lives -= enemy.damage
+        print('Base lives:', self.base_lives)
+        if (self.base_lives < 1):
+            print('Game Over!')
+
                             
 
 class Level_Debug(Level):
