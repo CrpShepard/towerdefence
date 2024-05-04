@@ -56,6 +56,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def receiveDamage(self, damage):
         self.health -= damage
+        self.checkHealth()
 
     def checkHealth(self):
         if self.health <= 0:

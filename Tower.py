@@ -19,11 +19,14 @@ class Tower(pygame.sprite.Sprite):
     y = 0
     accuracy = 0
     targets = []
-    engage = False
+    maxTargets = 0
+    inSearch = True
+    engaged = False
     built = False
     tower_cell_size = params.tower_cell_size
     attack_timer = 0
     attack_cooldown = 100
+    cell_keys = set()
 
     def __init__(self):
         super().__init__()
@@ -54,6 +57,16 @@ class Tower(pygame.sprite.Sprite):
             if self.targets:
                 self.targets[0].receiveDamage(self.damage)
                 print('inflicted damage!')
+
+    def newEnemy(self, enemy):
+        self.targets.append(enemy)
+        self.engaged = True
+
+    def deleteEnemy(self, enemy):
+        self.targets.remove(enemy)
+        if not self.targets:
+            self.engaged = False
+            self.attack_timer = 0
     
     def build():
         return
@@ -69,3 +82,4 @@ class LMG(Tower):
     cost = 100
     time_to_build = 10
     accuracy = 0.6
+    maxTargets = 1

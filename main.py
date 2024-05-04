@@ -1,5 +1,5 @@
 import pygame
-import Tower, Enemy, Level
+import Tower, Enemy, Level, PlayerStats, UI
 import random
 import params
 
@@ -11,17 +11,16 @@ running = True
 dt = 0
 
 currentLevel = Level.Level_Debug(screen)
-tower = Tower.LMG()
+playerStats = PlayerStats.PlayerStats()
+playerStats.init(currentLevel.level)
+ui = UI.UI()
 
-isTower_showRadius = False
-isCurrentLevel_drawCells = True
-
-for i in range(5):
+for i in range(1):
     enemy = Enemy.Conscript()
     enemy.x = random.randint(currentLevel.spawn_coords_x, params.game_area_width) 
     enemy.y = random.randint(0, params.game_area_height)
-    enemy.path_x = currentLevel.paths[0]
-    enemy.path_y = currentLevel.paths[1]
+    enemy.path_x = currentLevel.paths[0][0]
+    enemy.path_y = currentLevel.paths[0][1]
     enemy.new_path()
     currentLevel.enemies.append(enemy)
 
@@ -34,39 +33,47 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 for item in currentLevel.towers_area:
-                    if item.collidepoint(event.pos):
+                    if item[0].collidepoint(event.pos) and not item[1]:
+                        item[1] = True
+                        tower = Tower.LMG()
                         currentLevel.towers.append(tower)
-                        tower.x = item.left
-                        tower.y = item.top
-                        isTower_showRadius = True
+                        tower.x = item[0].left
+                        tower.y = item[0].top
+                        currentLevel.initTower(tower)
                         tower.built = True
+                        print('Tower has been built!')
 
     screen.fill("white")
 
     currentLevel.drawLevel(screen)
-    
-    if isCurrentLevel_drawCells:
-        currentLevel.drawCells(screen)
+    currentLevel.drawCells(screen)
 
     for tower in currentLevel.towers:
         if tower.built:
             tower.draw(screen)
-            if isTower_showRadius:
-                tower.showRadius(screen)
-            currentLevel.getEnemyInRadius(tower)
-            tower.update(clock)
+            tower.showRadius(screen)
+            if tower.inSearch:
+                currentLevel.getEnemyInRadius(tower)
+            else:
+                currentLevel.trackTargets(tower)
+            if tower.engaged:
+                tower.update(clock)
 
     for enemy in currentLevel.enemies:
         enemy.draw(screen)
         currentLevel.addEnemyToCell(enemy)
         currentLevel.handlePrevEnemyCell(enemy)
-        enemy.checkHealth()
+        #enemy.checkHealth()
         if not enemy.alive:
             currentLevel.deleteEnemy(enemy)
         if not enemy.reached_path:
             enemy.move()
         if enemy.x < currentLevel.base_coords_x:
-            currentLevel.enemyReachedBase(enemy)
+            #currentLevel.enemyReachedBase(enemy)
+            playerStats.receiveDamage(enemy.damage)
+            currentLevel.deleteEnemy(enemy)
+
+    ui.drawUI(screen)
     
     # flip() the display to put your work on screen
     pygame.display.flip()

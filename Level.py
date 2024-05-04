@@ -1,11 +1,12 @@
 import pygame
 import CalcMath
 import params
+import Tower
 
 class Level(pygame.sprite.Sprite):
+    level = 0
     towers = []
-    towers_coords_x = []
-    towers_coords_y = []
+    towers_coords = []
     towers_area = []
     tower_cell_size = params.tower_cell_size
     wave_timer = 0
@@ -13,7 +14,7 @@ class Level(pygame.sprite.Sprite):
     spawn_coords_x = 1225
     enemies = []
     base_coords_x = 25
-    base_lives = 0
+    #base_lives = 0
     paths = []
     grid = {}
     cell_size = 80
@@ -21,11 +22,10 @@ class Level(pygame.sprite.Sprite):
     height = params.game_area_height
 
     def __init__(self, surface):
-        index = 0
-        for item in self.towers_coords_x:
-            #self.towers.append(None)
-            self.towers_area.append(pygame.draw.rect(surface, color=(0, 0, 0), rect=pygame.Rect(self.towers_coords_x[index], self.towers_coords_y[index], self.tower_cell_size, self.tower_cell_size), width=2))
-            index += 1
+        super().__init__()
+    
+        for coord in self.towers_coords:
+            self.towers_area.append([pygame.draw.rect(surface, color=(0, 0, 0), rect=pygame.Rect(coord[0], coord[1], self.tower_cell_size, self.tower_cell_size), width=2), False])
 
     def drawCells(self, surface):
         for i in range(0, self.width, self.cell_size):
@@ -34,13 +34,11 @@ class Level(pygame.sprite.Sprite):
             pygame.draw.line(surface, (0,0,0), (0, i), (self.width, i)) 
 
     def drawLevel(self, surface):
-        index = 0
-        for item in self.towers_coords_x:
-            pygame.draw.rect(surface, color=(0, 0, 0), rect=pygame.Rect(self.towers_coords_x[index], self.towers_coords_y[index], self.tower_cell_size, self.tower_cell_size), width=2)
-            index += 1
+        for coord in self.towers_coords:
+            pygame.draw.rect(surface, color=(0, 0, 0), rect=pygame.Rect(coord[0], coord[1], self.tower_cell_size, self.tower_cell_size), width=2)
         
-        pygame.draw.rect(surface, color=(127, 255, 212), rect=pygame.Rect(0, 0, self.base_coords_x, self.height), width=2) #base outline
-        pygame.draw.rect(surface, color=(255, 45, 0), rect=pygame.Rect(self.spawn_coords_x, 0, self.width - self.spawn_coords_x, self.height), width=2) #enemy spawn outline
+        pygame.draw.rect(surface, color=(127, 255, 212), rect=pygame.Rect(0, 0, self.base_coords_x, self.height), width=0) #base outline
+        pygame.draw.rect(surface, color=(255, 45, 0), rect=pygame.Rect(self.spawn_coords_x, 0, self.width - self.spawn_coords_x, self.height), width=0) #enemy spawn outline
 
     def calculateCells(self, obj):
         min_cell_x = int(max(0, (obj.x - obj.radius) // self.cell_size))
@@ -82,18 +80,39 @@ class Level(pygame.sprite.Sprite):
         enemy.prev_cell_keys = self.getCellKeys(enemy)
 
     def getEnemyInRadius(self, tower):
-        cell_keys = self.getCellKeys(tower)
-        for cell_key in cell_keys:
+        #cell_keys = self.getCellKeys(tower)
+        count = 0
+        for cell_key in tower.cell_keys:
             if cell_key in self.grid:
                 if self.grid[cell_key]:
                     for enemy in self.grid[cell_key]:
                         if CalcMath.isCircleInsideCircle(enemy.x, enemy.y, enemy.radius, tower.x + self.tower_cell_size // 2, tower.y + self.tower_cell_size // 2, tower.radius):
-                            if enemy not in tower.targets:
-                                tower.targets.append(enemy)
+                            if enemy not in tower.targets and enemy.alive:
+                                #tower.targets.append(enemy)
+                                tower.newEnemy(enemy)
+                                count += 1
                                 print('target in sight!')
+                                if tower.type == Tower.Type.SINGLE:
+                                    tower.inSearch = False
+                                    return
                             #print('enemy at', cell_key)
-                        elif enemy in tower.targets:
-                            tower.targets.remove(enemy)
+                        #elif enemy in tower.targets:
+                            #tower.targets.remove(enemy)
+                            #tower.deleteEnemy(enemy)
+
+    def trackTargets(self, tower):
+        if tower.type == Tower.Type.SINGLE:
+            if tower.targets:
+                enemy = tower.targets[0]
+                if not CalcMath.isCircleInsideCircle(enemy.x, enemy.y, enemy.radius, tower.x + self.tower_cell_size // 2, tower.y + self.tower_cell_size // 2, tower.radius):
+                    tower.deleteEnemy(enemy)
+                    tower.inSearch = True
+                    return
+                if not enemy.alive:
+                    tower.deleteEnemy(enemy)
+                    tower.inSearch = True
+            else:
+                tower.inSearch = True
 
     def deleteEnemy(self, enemy):
         cell_keys = self.getCellKeys(enemy)
@@ -104,22 +123,25 @@ class Level(pygame.sprite.Sprite):
 
         for tower in self.towers:
             if enemy in tower.targets:
-                tower.targets.remove(enemy)
+                #tower.targets.remove(enemy)
+                tower.deleteEnemy(enemy)
 
         self.enemies.remove(enemy)
 
+    '''
     def enemyReachedBase(self, enemy):
         self.deleteEnemy(enemy)
         self.base_lives -= enemy.damage
         print('Base lives:', self.base_lives)
         if (self.base_lives < 1):
             print('Game Over!')
+    '''
 
-                            
+    def initTower(self, tower):
+        tower.cell_keys = self.getCellKeys(tower)                 
 
 class Level_Debug(Level):
-    base_lives = 999
-    towers_coords_x = [300]
-    towers_coords_y = [300]
-    paths = [0, 360]
+    level = 0
+    towers_coords = [[200, 200], [200, 400]]
+    paths = [[0, 360]]
 
