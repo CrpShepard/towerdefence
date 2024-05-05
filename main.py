@@ -14,8 +14,11 @@ currentLevel = Level.Level_Debug(screen)
 playerStats = PlayerStats.PlayerStats()
 playerStats.init(currentLevel.level)
 ui = UI.UI()
+#ui.drawUI(screen)
+ui.updateHealth(playerStats.base_lives)
+ui.updateGold(playerStats.gold)
 
-for i in range(1):
+for i in range(10):
     enemy = Enemy.Conscript()
     enemy.x = random.randint(currentLevel.spawn_coords_x, params.game_area_width) 
     enemy.y = random.randint(0, params.game_area_height)
@@ -71,6 +74,7 @@ while running:
         if enemy.x < currentLevel.base_coords_x:
             #currentLevel.enemyReachedBase(enemy)
             playerStats.receiveDamage(enemy.damage)
+            ui.updateHealth(playerStats.base_lives)
             currentLevel.deleteEnemy(enemy)
 
     ui.drawUI(screen)
