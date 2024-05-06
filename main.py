@@ -18,7 +18,7 @@ ui = UI.UI()
 ui.updateHealth(playerStats.base_lives)
 ui.updateGold(playerStats.gold)
 
-for i in range(10):
+for i in range(1000):
     enemy = Enemy.Conscript()
     enemy.x = random.randint(currentLevel.spawn_coords_x, params.game_area_width) 
     enemy.y = random.randint(0, params.game_area_height)
