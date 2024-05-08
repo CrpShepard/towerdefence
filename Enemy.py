@@ -20,6 +20,7 @@ class Enemy(pygame.sprite.Sprite):
     reached_path = False
     prev_cell_keys = set()
     alive = True
+    value = 0
 
     def __init__(self):
         super().__init__()
@@ -73,3 +74,4 @@ class Conscript(Enemy):
     damage = 1
     evasion = 0.05
     defence = 0
+    value = 5

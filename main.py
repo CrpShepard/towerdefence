@@ -68,6 +68,8 @@ while running:
         currentLevel.handlePrevEnemyCell(enemy)
         #enemy.checkHealth()
         if not enemy.alive:
+            playerStats.receiveGold(enemy.value)
+            ui.updateGold(playerStats.gold)
             currentLevel.deleteEnemy(enemy)
         if not enemy.reached_path:
             enemy.move()
