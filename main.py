@@ -15,6 +15,7 @@ playerStats = PlayerStats.PlayerStats()
 playerStats.init(currentLevel.level)
 ui = UI.UI()
 #ui.drawUI(screen)
+ui.initTowerMenu(playerStats.towers)
 ui.updateHealth(playerStats.base_lives)
 ui.updateGold(playerStats.gold)
 
@@ -38,13 +39,26 @@ while running:
                 for item in currentLevel.towers_area:
                     if item[0].collidepoint(event.pos) and not item[1]:
                         item[1] = True
-                        tower = Tower.LMG()
+                        tower = Tower.Rifle()
                         currentLevel.towers.append(tower)
                         tower.x = item[0].left
                         tower.y = item[0].top
                         currentLevel.initTower(tower)
                         tower.built = True
                         print('Tower has been built!')
+
+                for item in ui.towersSlot:
+                    #if item[0].collidepoint(event.pos):
+                    rect = item[0]
+                    rect.x -= ui.margin
+                    rect.y += ui.height + ui.margin # FIXME
+                    print(rect.x, rect.y, rect.width, rect.height)
+                    mouse_pos = pygame.mouse.get_pos()
+                    print(mouse_pos)
+                    if rect.collidepoint(mouse_pos):
+                        tower = getattr(Tower, item[1])
+                        print('ADADASD')
+                        print(tower.radius)
 
     screen.fill("white")
 

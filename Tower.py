@@ -56,7 +56,7 @@ class Tower(pygame.sprite.Sprite):
         if self.type == Type.SINGLE:
             if self.targets:
                 self.targets[0].receiveDamage(self.damage)
-                print('inflicted damage!')
+                #print('inflicted damage!')
 
     def newEnemy(self, enemy):
         self.targets.append(enemy)
@@ -74,7 +74,7 @@ class Tower(pygame.sprite.Sprite):
     def move():
         return
     
-class LMG(Tower):
+class Rifle(Tower):
     damage = 10
     radius = 150
     speed = 2

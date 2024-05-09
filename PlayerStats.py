@@ -3,9 +3,10 @@ import params
 class PlayerStats():
     base_lives = None
     gold = None
+    towers = None
 
     def init(self, level):
-        self.base_lives, self.gold = params.set_level_params(level)
+        self.base_lives, self.gold, self.towers = params.set_level_params(level)
 
     def receiveDamage(self, damage):
         self.base_lives -= damage
@@ -15,7 +16,8 @@ class PlayerStats():
         if self.base_lives < 1:
             self.death()
         else:
-            print('Base lives remains:', self.base_lives)
+            pass
+            #print('Base lives remains:', self.base_lives)
 
     def death(self):
         print('GAME OVER!')

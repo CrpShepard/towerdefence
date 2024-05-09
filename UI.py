@@ -28,6 +28,7 @@ class UI(pygame.sprite.Sprite):
             pygame.draw.line(self.surf, color, (0, i), (self.width, i))
 
     def drawUI(self, surface):
+        self.surf.blit(self.surf_towerMenu, (self.margin, self.margin))
         self.surf.blit(self.surf_statsArea, (self.width * 2/3 + self.width * 1/24 + self.margin * 2, self.margin))
         surface.blit(self.surf, (0, params.game_area_height))
 
@@ -50,12 +51,27 @@ class UI(pygame.sprite.Sprite):
         subSurf.blit(text_surface, (0, 0))
         self.surf_statsArea.blit(subSurf, (5, 5))
 
+    def initTowerMenu(self, towers):
+        self.towersSlot = []
+        coords = []
+        for i in range(self.margin, int(self.width * 2/3 - self.width * 1/20), int(self.tower_cell_size) + self.margin):
+            self.towersSlot.append([pygame.draw.rect(self.surf_towerMenu, (90, 90, 90), (i, self.margin, self.tower_cell_size, self.tower_cell_size)), None])
+            coords.append(i)
+
+        count = 0
+        for tower in towers:
+            img = pygame.image.load('resource/tower/' + tower + '.jpg')
+            img = pygame.transform.scale(img, (self.tower_cell_size, self.tower_cell_size))
+            self.towersSlot[count][1] = tower
+            self.surf_towerMenu.blit(img, (coords.pop(0), self.margin))
+
     def drawTowerMenu(self):
         self.surf_towerMenu = pygame.Surface((self.width * 2/3 - self.width * 1/20, self.height - self.margin * 2))
         pygame.draw.rect(self.surf_towerMenu, (120, 120, 120), (0, 0, self.width * 2/3, self.height - self.margin * 2))
-        for i in range(self.margin, int(self.width * 2/3 - self.width * 1/20), int(self.tower_cell_size) + self.margin):
-            pygame.draw.rect(self.surf_towerMenu, (90, 90, 90), (i, self.margin, self.tower_cell_size, self.tower_cell_size))
-        self.surf.blit(self.surf_towerMenu, (self.margin, self.margin))
+        #for i in range(self.margin, int(self.width * 2/3 - self.width * 1/20), int(self.tower_cell_size) + self.margin):
+            #pygame.draw.rect(self.surf_towerMenu, (90, 90, 90), (i, self.margin, self.tower_cell_size, self.tower_cell_size))
+        
+        #self.surf.blit(self.surf_towerMenu, (self.margin, self.margin))
 
     def drawUpgradeButton(self):
         self.surf_upgrade = pygame.Surface((self.tower_cell_size / 1.5, self.tower_cell_size / 1.5))
